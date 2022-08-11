@@ -242,7 +242,7 @@ class PostsPagesTests(TestCase):
             reverse('posts:follow_index')
         )
         new_posts = response.context.get('page_obj')
-        self.assertIn(new_post,new_posts,)
+        self.assertIn(new_post,new_posts)
 
 
 class PaginatorViewsTest(TestCase):
