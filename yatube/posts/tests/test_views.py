@@ -10,7 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from ..models import Group, Post, User
+from ..models import Follow, Group, Post, User
 
 User = get_user_model()
 
@@ -210,6 +210,39 @@ class PostsPagesTests(TestCase):
             follow=True
         )
         self.assertEqual(self.post.comments.count(), 1)
+
+    def test_authorized_client_follow(self):
+        """Авторизованный пользователь может подписываться
+        на других пользователей и удалять их из подписок."""
+        Follow.objects.get_or_create(
+            user=self.user,
+            author=self.user_author
+        )
+        obj_number = Follow.objects.filter(
+            user=self.user,
+            author=self.user_author
+        )
+        self.assertEqual(obj_number.count(), 1)
+        Follow.objects.filter(
+            user=self.user,
+            author=self.user_author
+        ).delete()
+        self.assertEqual(obj_number.count(), 0)
+
+    def test_new_post_for_follower(self):
+        new_post = Post.objects.create(
+            text='Новый пост',
+            author=self.user_author
+        )
+        Follow.objects.create(
+            user=self.user,
+            author=self.user_author
+        )
+        response = self.authorized_client.get(
+            reverse('posts:follow_index')
+        )
+        new_posts = response.context.get('page_obj')
+        self.assertIn(new_post,new_posts,)
 
 
 class PaginatorViewsTest(TestCase):
