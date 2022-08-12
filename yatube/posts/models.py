@@ -69,7 +69,6 @@ class Comment(models.Model):
     created = models.DateTimeField('Дата публикации',
                                    auto_now_add=True)
 
-
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
@@ -96,6 +95,6 @@ class Follow(models.Model):
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
         models.UniqueConstraint(
-                fields=['user', 'author'],
-                name='unique_follow'
-            )
+            fields=['user', 'author'],
+            name='unique_follow'
+        )
